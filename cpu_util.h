@@ -43,7 +43,11 @@ static inline void cpu_relax(void) {
 #elif defined(__aarch64__)
 # define cpu_relax() asm volatile("yield" ::: "memory")
 #elif defined(__riscv)
-#define cpu_relax() asm volatile("nop")
+#define cpu_relax()                                         \
+  do {                                                      \
+      int randomDelay=1000;                                 \
+      asm volatile(("csrw   0xf, %0" : "+r" (randomDelay)); \
+  } while(0)
 #else
 #warning "no cpu_relax for your cpu"
 #define cpu_relax() do {} while (0)
